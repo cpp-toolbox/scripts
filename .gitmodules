@@ -1,0 +1,12 @@
+[submodule "cpp_tbx_submodule_adder"]
+	path = cpp_tbx_submodule_adder
+	url = git@github.com:cpp-toolbox/cpp_tbx_submodule_adder.git
+[submodule "sbpt"]
+	path = sbpt
+	url = git@github.com:cpp-toolbox/sbpt.git
+[submodule "process_changes_in_submodules"]
+	path = process_changes_in_submodules
+	url = git@github.com:cpp-toolbox/process_changes_in_submodules.git
+[submodule "clang_formatting"]
+	path = clang_formatting
+	url = git@github.com:cpp-toolbox/clang_formatting.git
