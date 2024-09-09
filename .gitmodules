@@ -13,3 +13,6 @@
 [submodule "cpp_file_generator"]
 	path = cpp_file_generator
 	url = git@github.com:cpp-toolbox/cpp_file_generator.git
+[submodule "ccgen"]
+	path = ccgen
+	url = git@github.com:cuppajoeman/ccgen.git
