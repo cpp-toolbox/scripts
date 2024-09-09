@@ -10,3 +10,6 @@
 [submodule "clang_formatting"]
 	path = clang_formatting
 	url = git@github.com:cpp-toolbox/clang_formatting.git
+[submodule "cpp_file_generator"]
+	path = cpp_file_generator
+	url = git@github.com:cpp-toolbox/cpp_file_generator.git
