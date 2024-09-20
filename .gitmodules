@@ -16,3 +16,6 @@
 [submodule "ccgen"]
 	path = ccgen
 	url = git@github.com:cuppajoeman/ccgen.git
+[submodule "build_notifier"]
+	path = build_notifier
+	url = git@github.com:cpp-toolbox/build_notifier.git
