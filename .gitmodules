@@ -19,3 +19,6 @@
 [submodule "build_notifier"]
 	path = build_notifier
 	url = git@github.com:cpp-toolbox/build_notifier.git
+[submodule "editor_configurations"]
+	path = editor_configurations
+	url = git@github.com:cpp-toolbox/editor_configurations.git
