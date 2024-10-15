@@ -2,7 +2,7 @@
 
 # Function to display help
 show_help() {
-    echo "Usage: $0 [gource_options]"
+    echo "Usage: $0 [options] [gource_options]"
     echo
     echo "This script generates a Gource visualization of Git submodules in the current repository."
     echo
@@ -13,15 +13,32 @@ show_help() {
     echo "                  For example: --seconds-per-day 0.1 --max-files 100"
     echo
     echo "Options:"
-    echo "  -h, --help      Display this help message."
+    echo "  -h, --help           Display this help message."
+    echo "  --exclude <list>     Comma-separated list of submodules to exclude."
     echo
 }
 
-# Check for help option
-if [[ "$1" == "-h" || "$1" == "--help" ]]; then
-    show_help
-    exit 0
-fi
+# Variables
+exclude_submodules=()
+
+# Parse options
+while [[ "$1" != "" ]]; do
+    case "$1" in
+        -h | --help)
+            show_help
+            exit 0
+            ;;
+        --exclude)
+            shift
+            exclude_submodules=($(echo "$1" | tr ',' ' '))
+            ;;
+        *)
+            # Collect Gource options
+            gource_args+="$1 "
+            ;;
+    esac
+    shift
+done
 
 # Function to find all Git submodules
 find_submodules() {
@@ -48,9 +65,16 @@ if [ -z "$submodules" ]; then
     exit 0
 fi
 
-# Generate custom log files for each submodule
+# Generate custom log files for each submodule except excluded ones
 for repo in $submodules; do
     repo_name=$(basename "$repo")
+    
+    # Skip excluded submodules
+    if [[ " ${exclude_submodules[@]} " =~ " $repo_name " ]]; then
+        echo "Excluding submodule $repo_name..."
+        continue
+    fi
+
     echo "Generating log for submodule $repo_name..."
     
     # Generate Gource custom log
@@ -63,12 +87,6 @@ done
 # Combine the logs together and sort them
 echo "Combining logs..."
 cat "$log_dir/log_"*.txt | sort -n > "$log_dir/combined.txt"
-
-# Check if any Gource arguments are provided
-gource_args=""
-if [ "$#" -gt 0 ]; then
-    gource_args="$@"
-fi
 
 # Feed the result into Gource with optional arguments
 echo "Generating Gource visualization..."
