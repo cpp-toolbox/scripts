@@ -90,6 +90,10 @@ def main():
     print("Running build.py...")
     run_command("python scripts/build_notifier/build.py -t r -g")
 
+    # Step 5: Formatting
+    print("Setting up clangd and clang-format...")
+    run_command("python scripts/clang_formatting/copy_files.py .")
+
     print("Setup completed successfully!")
 
 if __name__ == "__main__":
