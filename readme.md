@@ -1,4 +1,7 @@
 # setup
+* run `python scripts/setup/main.py` from the root project directory which will setup up the project and build the project
+
+# setup details:
 * cpp_project_bootstrapper: (sets up a conanfile.txt and CMakeLists.txt with mwe main.cpp)
 * sbpt: if the project uses cpp-toolbox subprojects, then you should run this
 * clang_formatting: run the copy files script to get the formatting and setup where clangd will look for the compile commands
