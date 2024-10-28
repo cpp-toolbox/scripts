@@ -75,7 +75,7 @@ def main():
             print(f"Error creating symbolic links: {e}")
             sys.exit(1)
 
-        # Run the batcher.py script
+        # Run the batcher.py script after generating and symlinking
         print("Running batcher.py with the provided config...")
         run_command(f"python3 {batcher_path}/batcher.py --config-file .requested_shaders.txt")
     else:
