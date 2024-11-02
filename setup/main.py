@@ -1,6 +1,8 @@
 import os
 import subprocess
 import sys
+import platform
+import shutil
 
 def run_command(command):
     """Run a command in the shell and check if it succeeds."""
@@ -57,18 +59,27 @@ def main():
             print(f"Error: main.py not found in {shader_standard_path}.")
             sys.exit(1)
 
-        # Step to create symbolic links in the batcher directory
-        # Calculate relative paths for the symbolic links
+        # Paths to the original files
         shader_file = os.path.join(shader_standard_path, 'standard.py')
         shader_summary_file = os.path.join(shader_standard_path, 'shader_summary.py')
 
-        relative_shader_link = os.path.relpath(shader_file, start=batcher_path)
-        relative_shader_summary_link = os.path.relpath(shader_summary_file, start=batcher_path)
+        # Calculate relative paths for copying
+        dest_shader_path = os.path.join(batcher_path, 'standard.py')
+        dest_shader_summary_path = os.path.join(batcher_path, 'shader_summary.py')
 
         try:
-            os.symlink(relative_shader_link, os.path.join(batcher_path, 'standard.py'))
-            os.symlink(relative_shader_summary_link, os.path.join(batcher_path, 'shader_summary.py'))
-            print("Relative symbolic links created for shader.py and shader_summary.py in the batcher directory.")
+            # Copy files, overwriting if they exist
+            if os.path.exists(dest_shader_path):
+                os.remove(dest_shader_path)
+
+            shutil.copy2(shader_file, dest_shader_path)
+
+            if os.path.exists(dest_shader_summary_path):
+                os.remove(dest_shader_summary_path)
+
+            shutil.copy2(shader_summary_file, dest_shader_summary_path)
+
+            print("Files copied and overwritten for standard.py and shader_summary.py in the batcher directory.")
         except FileExistsError:
             print("Warning: Symbolic links already exist in the batcher directory.")
         except Exception as e:
