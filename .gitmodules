@@ -22,3 +22,6 @@
 [submodule "editor_configurations"]
 	path = editor_configurations
 	url = git@github.com:cpp-toolbox/editor_configurations.git
+[submodule "cpp_project_bootstrapper"]
+	path = cpp_project_bootstrapper
+	url = git@github.com:cpp-toolbox/cpp_project_bootstrapper.git

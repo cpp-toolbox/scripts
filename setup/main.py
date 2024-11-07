@@ -90,8 +90,8 @@ def main():
         print("Running batcher.py with the provided config...")
         run_command(f"python3 {batcher_path}/batcher.py --config-file .requested_shaders.txt")
     else:
-        print("Error: 'batcher' directory not found in 'src'.")
-        sys.exit(1)
+        print("'batcher' directory not found in 'src'. continuing on")
+        # sys.exit(1)
 
     # Step 4: Run conan install
     print("Running conan install...")
