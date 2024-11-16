@@ -28,3 +28,6 @@
 [submodule "json_spritesheet_generator"]
 	path = json_spritesheet_generator
 	url = git@github.com:py-garden/json_spritesheet_generator.git
+[submodule "setup/fs_utils"]
+	path = setup/fs_utils
+	url = git@github.com:py-garden/fs_utils.git
