@@ -25,3 +25,6 @@
 [submodule "cpp_project_bootstrapper"]
 	path = cpp_project_bootstrapper
 	url = git@github.com:cpp-toolbox/cpp_project_bootstrapper.git
+[submodule "json_spritesheet_generator"]
+	path = json_spritesheet_generator
+	url = git@github.com:py-garden/json_spritesheet_generator.git
