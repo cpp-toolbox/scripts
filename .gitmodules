@@ -31,3 +31,6 @@
 [submodule "setup/fs_utils"]
 	path = setup/fs_utils
 	url = git@github.com:py-garden/fs_utils.git
+[submodule "texture_packer"]
+	path = texture_packer
+	url = git@github.com:py-garden/texture_packer.git
