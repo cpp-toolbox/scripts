@@ -26,11 +26,11 @@
 	path = cpp_project_bootstrapper
 	url = git@github.com:cpp-toolbox/cpp_project_bootstrapper.git
 [submodule "json_spritesheet_generator"]
-	path = json_spritesheet_generator
+	path = textures/json_spritesheet_generator
 	url = git@github.com:py-garden/json_spritesheet_generator.git
 [submodule "setup/fs_utils"]
 	path = setup/fs_utils
 	url = git@github.com:py-garden/fs_utils.git
 [submodule "texture_packer"]
-	path = texture_packer
+	path = textures/texture_packer
 	url = git@github.com:py-garden/texture_packer.git
