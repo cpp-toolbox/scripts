@@ -25,10 +25,10 @@ def setup_shader_standard(shader_standard_path: str):
 
 def setup_batcher(shader_standard_path: str, batcher_path: str):
     """Set up the batcher by copying shaders and running batcher.py."""
-    requested_shaders_path = os.path.join('.', '.requested_shaders.txt')
-    if not os.path.isfile(requested_shaders_path):
-        print("Error: You're using the batcher but you don't have a '.requested_shaders.txt' in the root directory. Please create this and try again.")
-        sys.exit(1)
+    # requested_shaders_path = os.path.join('.', '.all_required_shader_batchers.txt')
+    # if not os.path.isfile(requested_shaders_path):
+    #     print("Error: You're using the batcher but you don't have a '.all_required_shader_batchers.txt' in the root directory. Please create this and try again.")
+    #     sys.exit(1)
 
     setup_shader_standard(shader_standard_path)
 
@@ -61,7 +61,7 @@ def setup_batcher(shader_standard_path: str, batcher_path: str):
 
     # Run the batcher.py script after generating and symlinking
     print("Running batcher.py with the provided config...")
-    run_command(f"python3 {batcher_path}/main.py --config-file .requested_shaders.txt")
+    run_command(f"python3 {batcher_path}/main.py --config-file .all_required_shader_batchers.txt")
 
 def compile_shaders():
     """Compile shaders using the shader compilation script."""
