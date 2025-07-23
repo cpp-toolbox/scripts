@@ -37,3 +37,21 @@
 [submodule "go/fs_utils"]
 	path = go/fs_utils
 	url = git@github.com:py-garden/fs_utils.git
+[submodule "meta/fs_utils"]
+	path = meta/fs_utils
+	url = git@github.com:py-garden/fs_utils.git
+[submodule "meta/user_input"]
+	path = meta/user_input
+	url = git@github.com:py-garden/user_input.git
+[submodule "meta/text_utils"]
+	path = meta/text_utils
+	url = git@github.com:py-garden/text_utils.git
+[submodule "meta/collection_utils"]
+	path = meta/collection_utils
+	url = git@github.com:py-garden/collection_utils.git
+[submodule "meta/func_utils"]
+	path = meta/func_utils
+	url = git@github.com:py-garden/func_utils.git
+[submodule "conan_utils"]
+	path = conan_utils
+	url = git@github.com:cpp-toolbox/conan_utils.git

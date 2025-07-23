@@ -82,12 +82,15 @@ build_folder_exists = os.path.exists("build")
 need_to_run_conan_install = conanfile_had_updates or not build_folder_exists
 
 if need_to_run_conan_install:
+    print("RUNNING CONAN INSTALL")
     # Run Conan and patch CMakeLists.txt
     conan_output = run_command_capture_output("conan install . --build=missing")
     find_packages, target_links = extract_cmake_snippets(conan_output)
     update_cmake_lists(find_packages, target_links, "CMakeLists.txt")
 
     run_command("cmake --preset conan-release")
+else:
+    print("NOT RUNNING CONAN INSTALL")
 
 # -- .cpp files check --
 
@@ -100,7 +103,11 @@ new_cpp_files = find_new_files(previous_mod_times, current_mod_times)
 save_mod_times(current_mod_times, cpp_files_mod_times_path)
 
 if new_cpp_files:
+    print("NEW CPP FILES")
     run_command("cmake --preset conan-release")
+else: 
+    print("NO NEW CPP FILES")
+
 
 # -- Shader batchers --
 
@@ -108,7 +115,10 @@ shader_batcher_files = find_all_instances_of_file_in_directory_recursively(".", 
 uses_shader_batchers = len(shader_batcher_files) >= 1
 
 if uses_shader_batchers:
+    print("SHADER BATCHERS FOUND")
     run_command("python scripts/setup/graphics_systems.py")
+else:
+    print("NO SHADER BATCHERS FOUND")
 
 # -- Shader batch preprocessor tool --
 
