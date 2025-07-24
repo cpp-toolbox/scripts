@@ -4,6 +4,21 @@ import shlex
 import re
 from pathlib import Path
 from fs_utils.main import *
+import shutil
+
+def get_python_command():
+    """
+    Returns the appropriate Python command: 'python3' if available,
+    otherwise 'python' if available. Raises an error if neither is found.
+    """
+    if shutil.which("python3"):
+        return "python3"
+    elif shutil.which("python"):
+        return "python"
+    else:
+        raise EnvironmentError("Neither 'python3' nor 'python' is available in PATH.")
+
+python_command = get_python_command()
 
 def run_command(command: str, check: bool = True, cwd: str = None):
     """
@@ -116,13 +131,13 @@ uses_shader_batchers = len(shader_batcher_files) >= 1
 
 if uses_shader_batchers:
     print("SHADER BATCHERS FOUND")
-    run_command("python scripts/setup/graphics_systems.py")
+    run_command(f"{python_command} scripts/setup/graphics_systems.py")
 else:
     print("NO SHADER BATCHERS FOUND")
 
 # -- Shader batch preprocessor tool --
 
-run_command("python scripts/sbpt/main.py src")
+run_command(f"{python_command} scripts/sbpt/main.py src")
 
 # -- Final build step --
 
