@@ -55,3 +55,6 @@
 [submodule "conan_utils"]
 	path = conan_utils
 	url = git@github.com:cpp-toolbox/conan_utils.git
+[submodule "go/collection_utils"]
+	path = go/collection_utils
+	url = git@github.com:py-garden/collection_utils.git
