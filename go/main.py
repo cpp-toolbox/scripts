@@ -19,6 +19,31 @@ from fs_utils.main import (
 from collection_utils.main import *
 
 
+# os utils
+
+import platform
+from enum import Enum, auto
+
+class OSType(Enum):
+    WINDOWS = auto()
+    LINUX = auto()
+    MACOS = auto()
+    UNKNOWN = auto()
+
+def get_os_type() -> OSType:
+    system = platform.system()
+    
+    if system == "Windows":
+        return OSType.WINDOWS
+    elif system == "Linux":
+        return OSType.LINUX
+    elif system == "Darwin":  # macOS reports as "Darwin"
+        return OSType.MACOS
+    else:
+        return OSType.UNKNOWN
+
+
+
 # ------------------------------------------------------------------------------
 # Utility helpers
 # ------------------------------------------------------------------------------
@@ -32,6 +57,8 @@ def get_python_command():
         return "python3"
     elif shutil.which("python"):
         return "python"
+    elif shutil.which("py"):
+        return "py"
     else:
         raise EnvironmentError("Neither 'python3' nor 'python' is available in PATH.")
 
@@ -174,9 +201,19 @@ def plan_build_actions() -> list[str]:
     build_folder_exists = os.path.exists("build")
     need_to_run_conan_install = conanfile_had_updates or not build_folder_exists
 
+
+    os_type = get_os_type()
+    cmake_preset_command = ""
+
+    if os_type == OSType.WINDOWS:
+        cmake_preset_command = "cmake --preset conan-default"
+    elif os_type == OSType.LINUX:
+        cmake_preset_command = "cmake --preset conan-release"
+
+
     if need_to_run_conan_install:
         planned_steps.append("conan install . --build=missing")
-        planned_steps.append("cmake --preset conan-release")
+        planned_steps.append(cmake_preset_command)
 
     # -- .cpp file changes -----------------------------------------------------
     cpp_files_mod_times_path = ".cpp_files_last_modified.json"
@@ -189,8 +226,8 @@ def plan_build_actions() -> list[str]:
     new_cpp_files = find_new_files(previous_files, current_files)
     save_mod_times(current_mod_times, cpp_files_mod_times_path)
 
-    if new_cpp_files and "cmake --preset conan-release" not in planned_steps:
-        planned_steps.append("cmake --preset conan-release")
+    if new_cpp_files and cmake_preset_command not in planned_steps:
+        planned_steps.append(cmake_preset_command)
 
     # -- Final build -----------------------------------------------------------
     planned_steps.append("cmake --build --preset conan-release")
