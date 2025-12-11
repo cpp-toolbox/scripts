@@ -1,3 +1,19 @@
+# get it
+
+cloning
+```
+git clone --recurse-submodules -j8 git@github.com:cpp-toolbox/scripts.git
+```
+
+
+adding as a submodule
+```
+git submodule add git@github.com:cpp-toolbox/scripts.git
+cd scripts
+git submodule update --init --recursive
+cd ..
+```
+
 # setup
 * run `python scripts/setup/main.py` from the root project directory which will setup up the project and build the project
 
