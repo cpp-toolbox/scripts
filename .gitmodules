@@ -58,3 +58,6 @@
 [submodule "go/collection_utils"]
 	path = go/collection_utils
 	url = git@github.com:py-garden/collection_utils.git
+[submodule "setup/text_utils"]
+	path = setup/text_utils
+	url = git@github.com:py-garden/text_utils.git
