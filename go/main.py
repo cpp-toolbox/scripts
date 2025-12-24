@@ -50,14 +50,11 @@ def get_os_type() -> OSType:
 # ------------------------------------------------------------------------------
 
 
-def get_python_command():
-    """
-    Returns 'python3' if available, else 'python', else raises an error.
-    """
-    if shutil.which("python3"):
-        return "python3"
-    elif shutil.which("python"):
+def get_python_command() -> str:
+    if shutil.which("python"):
         return "python"
+    elif shutil.which("python3"):
+        return "python3"
     elif shutil.which("py"):
         return "py"
     else:
