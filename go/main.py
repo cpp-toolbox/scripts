@@ -24,15 +24,17 @@ from collection_utils.main import *
 import platform
 from enum import Enum, auto
 
+
 class OSType(Enum):
     WINDOWS = auto()
     LINUX = auto()
     MACOS = auto()
     UNKNOWN = auto()
 
+
 def get_os_type() -> OSType:
     system = platform.system()
-    
+
     if system == "Windows":
         return OSType.WINDOWS
     elif system == "Linux":
@@ -41,7 +43,6 @@ def get_os_type() -> OSType:
         return OSType.MACOS
     else:
         return OSType.UNKNOWN
-
 
 
 # ------------------------------------------------------------------------------
@@ -142,9 +143,9 @@ def find_single_executable(build_release_path: str) -> str | None:
     if len(executables) == 1:
         return executables[0]
     elif len(executables) > 1:
-        print("⚠️  Multiple executables found in build/Release.")
+        print(" Multiple executables found in build/Release.")
     else:
-        print("⚠️  No executable found in build/Release.")
+        print(" No executable found in build/Release.")
     return None
 
 
@@ -161,13 +162,13 @@ def plan_build_actions() -> list[str]:
     python_command = get_python_command()
     planned_steps: list[str] = []
 
-    # -- Shader tools always first --------------------------------------------
+    # -- shader tools always first --------------------------------------------
     shader_batcher_files = find_all_instances_of_file_in_directory_recursively(
         ".", ".required_shader_batchers.txt"
     )
     uses_shader_batchers = len(shader_batcher_files) >= 1
 
-    # Determine if shader batchers or shader sources changed
+    # determine if shader batchers or shader sources changed
     shader_batcher_mod_times_path = ".shader_batcher_last_modified.json"
 
     previous_mod_times = load_last_mod_times(shader_batcher_mod_times_path)
@@ -183,10 +184,8 @@ def plan_build_actions() -> list[str]:
     if shader_batcher_needs_run:
         planned_steps.append(f"{python_command} scripts/setup/graphics_systems.py")
 
-    # Always run shader batch preprocessor before CMake or Conan
-    planned_steps.append(f"{python_command} scripts/sbpt/main.py src")
+    planned_steps.append(f"{python_command} scripts/sbpt/main.py init src")
 
-    # -- Conan file check ------------------------------------------------------
     path_filter = make_regex_filter(["conanfile.txt"], [])
     conan_file_mod_times_path = ".conanfile_last_modified.json"
 
@@ -201,7 +200,6 @@ def plan_build_actions() -> list[str]:
     build_folder_exists = os.path.exists("build")
     need_to_run_conan_install = conanfile_had_updates or not build_folder_exists
 
-
     os_type = get_os_type()
     cmake_preset_command = ""
 
@@ -209,7 +207,6 @@ def plan_build_actions() -> list[str]:
         cmake_preset_command = "cmake --preset conan-default"
     elif os_type == OSType.LINUX:
         cmake_preset_command = "cmake --preset conan-release"
-
 
     if need_to_run_conan_install:
         planned_steps.append("conan install . --build=missing")
@@ -254,20 +251,20 @@ def main():
     planned_steps = plan_build_actions()
 
     if not planned_steps:
-        print("✅ Nothing to do. Everything is up to date.")
+        print(" Nothing to do. Everything is up to date.")
         return
 
-    print("\n🧭 Planned steps:")
+    print("\n Planned steps:")
     for i, step in enumerate(planned_steps, 1):
         print(f"  {i}. {step}")
 
     if not args.yes:
         proceed = input("\nProceed with these steps? [y/N] ").strip().lower()
         if proceed not in ("y", "yes"):
-            print("❌ Aborted.")
+            print(" Aborted.")
             return
 
-    print("\n🚀 Executing build plan...\n")
+    print("\n Executing build plan...\n")
     for step in planned_steps:
         if step.startswith("conan install"):
             conan_output = run_command_capture_output(step)
@@ -279,7 +276,7 @@ def main():
     if args.run:
         exe_path = find_single_executable("build/Release")
         if exe_path:
-            print(f"\n▶️  Running built executable: {exe_path}\n")
+            print(f"\n  Running built executable: {exe_path}\n")
             run_command(exe_path)
 
 
