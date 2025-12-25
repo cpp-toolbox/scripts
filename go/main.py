@@ -63,7 +63,7 @@ def get_python_command() -> str:
 
 def run_command(command: str, check: bool = True, cwd: str | None = None):
     """Run a shell command with optional working directory and error checking."""
-    print(f"➡️  Running: {command}")
+    print(f"Running: {command}")
     subprocess.run(shlex.split(command), check=check, cwd=cwd)
 
 
@@ -71,7 +71,7 @@ def run_command_capture_output(
     command: str, check: bool = True, cwd: str | None = None
 ) -> str:
     """Run a command and return its captured stdout."""
-    print(f"➡️  Running: {command}")
+    print(f"Running: {command}")
     result = subprocess.run(
         shlex.split(command),
         check=check,
@@ -247,7 +247,7 @@ def main():
     )
     args = parser.parse_args()
 
-    print("🔍 Determining what needs to be done...")
+    print("Determining what needs to be done...")
     planned_steps = plan_build_actions()
 
     if not planned_steps:
