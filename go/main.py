@@ -202,7 +202,7 @@ def plan_build_actions() -> list[str]:
 
     if os_type == OSType.WINDOWS:
         cmake_preset_command = "cmake --preset conan-default"
-    elif os_type == OSType.LINUX:
+    elif os_type in {OSType.LINUX, OSType.MACOS}:
         cmake_preset_command = "cmake --preset conan-release"
 
     if need_to_run_conan_install:
