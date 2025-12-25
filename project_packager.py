@@ -52,39 +52,45 @@ def package_project(custom_build_dir: str | None = None):
 
     # Get Git branch and commit
     branch, commit = get_git_info()
-    suffix = (
-        f"_{branch}_{commit}" if branch != "unknown" and commit != "unknown" else ""
-    )
+    os_name = platform.system().lower()
+
+    suffix_parts = []
+    if branch != "unknown" and commit != "unknown":
+        suffix_parts.append(f"{branch}_{commit}")
+    if os_name:
+        suffix_parts.append(os_name)
+
+    suffix = "_" + "_".join(suffix_parts) if suffix_parts else ""
     zip_file = Path(f"{build_dir}{suffix}.zip")
 
     # Cleanup previous runs
     if build_dir.exists():
-        print(f"🧹 Removing old build directory: {build_dir}")
+        print(f"Removing old build directory: {build_dir}")
         shutil.rmtree(build_dir)
     if zip_file.exists():
-        print(f"🧹 Removing old zip file: {zip_file}")
+        print(f"Removing old zip file: {zip_file}")
         zip_file.unlink()
 
-    print(f"📁 Creating build directory: {build_dir}")
+    print(f"Creating build directory: {build_dir}")
     build_dir.mkdir(parents=True, exist_ok=True)
 
     # Copy assets folder
     assets_src = project_dir / "assets"
     if assets_src.exists():
-        print(f"📦 Copying assets → {build_dir / 'assets'}")
+        print(f"Copying assets → {build_dir / 'assets'}")
         shutil.copytree(assets_src, build_dir / "assets")
     else:
-        print("⚠️  Warning: 'assets' folder not found, skipping.")
+        print("Warning: 'assets' folder not found, skipping.")
 
     # Find executables in build/Release
     release_dir = project_dir / "build" / "Release"
     if not release_dir.exists():
-        print(f"❌ Error: Release directory not found: {release_dir}")
+        print(f"Error: Release directory not found: {release_dir}")
         return
 
     exe_candidates = [f for f in release_dir.iterdir() if is_executable(f)]
     if not exe_candidates:
-        print("❌ Error: No executable found in build/Release")
+        print("Error: No executable found in build/Release")
         return
 
     # Choose executable (prompt if multiple)
@@ -101,25 +107,27 @@ def package_project(custom_build_dir: str | None = None):
         )
         exe_file = exe_candidates[index]
 
-    print(f"🚀 Found executable: {exe_file.name}")
+    print(f"Found executable: {exe_file.name}")
     shutil.copy2(exe_file, build_dir / exe_file.name)
 
     # Write commit info inside build dir
     commit_file = build_dir / "commit.txt"
-    commit_file.write_text(f"Branch: {branch}\nCommit: {commit}\n", encoding="utf-8")
-    print(f"📝 Embedded git info: {branch} @ {commit}")
+    commit_file.write_text(
+        f"Branch: {branch}\nCommit: {commit}\nOS: {os_name}\n", encoding="utf-8"
+    )
+    print(f"Embedded git info: {branch} @ {commit} on {os_name}")
 
     # Zip it up
-    print(f"📦 Creating zip archive: {zip_file}")
+    print(f"Creating zip archive: {zip_file}")
     with zipfile.ZipFile(zip_file, "w", zipfile.ZIP_DEFLATED) as zipf:
         for root, _, files in os.walk(build_dir):
             for file in files:
                 file_path = Path(root) / file
                 zipf.write(file_path, file_path.relative_to(build_dir.parent))
 
-    print(f"\n✅ Packaging complete: {zip_file}")
+    print(f"\nPackaging complete: {zip_file}")
     if branch != "unknown":
-        print(f"🔖 Git baked in: {branch} @ {commit}")
+        print(f"Git baked in: {branch} @ {commit} on {os_name}")
 
 
 def clean_project():
@@ -131,7 +139,7 @@ def clean_project():
     deleted = False
     for path in project_dir.iterdir():
         if path.is_dir() and path.name.startswith(build_prefix):
-            print(f"🗑️  Removing directory: {path}")
+            print(f"Removing directory: {path}")
             shutil.rmtree(path)
             deleted = True
         elif (
@@ -139,19 +147,19 @@ def clean_project():
             and path.name.startswith(build_prefix)
             and path.suffix == ".zip"
         ):
-            print(f"🗑️  Removing file: {path}")
+            print(f"Removing file: {path}")
             path.unlink()
             deleted = True
 
     if not deleted:
-        print("✨ Nothing to clean.")
+        print("Nothing to clean.")
     else:
-        print("✅ Cleanup complete.")
+        print("Cleanup complete.")
 
 
 def main():
     parser = argparse.ArgumentParser(
-        description="📦 Project Packager — package your build output with git metadata."
+        description="Project Packager — package your build output with git metadata."
     )
     subparsers = parser.add_subparsers(dest="command", required=True)
 

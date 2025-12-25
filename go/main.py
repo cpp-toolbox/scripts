@@ -206,7 +206,10 @@ def plan_build_actions() -> list[str]:
         cmake_preset_command = "cmake --preset conan-release"
 
     if need_to_run_conan_install:
-        planned_steps.append("conan install . --build=missing")
+        # on a fresh linux env you usually need to install new packages, that's why the extra configuration is there.
+        planned_steps.append(
+            "conan install . --build=missing -c tools.system.package_manager:mode=install -c tools.system.package_manager:sudo=True"
+        )
         planned_steps.append(cmake_preset_command)
 
     # -- .cpp file changes -----------------------------------------------------
