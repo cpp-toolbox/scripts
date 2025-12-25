@@ -253,7 +253,7 @@ def main():
     planned_steps = plan_build_actions()
 
     if not planned_steps:
-        print(" Nothing to do. Everything is up to date.")
+        print("Nothing to do. Everything is up to date.")
         return
 
     print("\n Planned steps:")

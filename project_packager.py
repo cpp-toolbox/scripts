@@ -52,6 +52,35 @@ def package_project(custom_build_dir: str | None = None):
 
     # Get Git branch and commit
     branch, commit = get_git_info()
+
+    # base OS name
+    system = platform.system().lower()
+    if system == "darwin":
+        os_name = "macos"
+    elif system == "windows":
+        os_name = "windows"
+    elif system == "linux":
+        os_name = "linux"
+    else:
+        os_name = system  # fallback
+
+    # architecture
+    arch = platform.machine().lower()
+
+    # normalize macOS arch to intel/silicon
+    if os_name == "macos":
+        if arch == "x86_64":
+            arch_name = "intel"
+        elif arch == "arm64":
+            arch_name = "silicon"
+        else:
+            arch_name = arch
+    else:
+        arch_name = arch  # leave as-is for Windows/Linux
+
+    # Combine
+    os_name = f"{os_name}_{arch_name}"
+
     os_name = platform.system().lower()
 
     suffix_parts = []
