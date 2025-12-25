@@ -221,7 +221,7 @@ def main():
         package_project(args.dir)
     elif args.command == "clean":
         clean_project()
-    elif args.command == "find":
+    elif args.command == "gha_zip_file_name":
         zip_file = find_zip()
         if zip_file:
             # github actions expects name=value format
