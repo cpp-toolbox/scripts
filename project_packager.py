@@ -212,7 +212,7 @@ def main():
     )
 
     package_parser = subparsers.add_parser(
-        "find", help="Find the generated zip from the package command."
+        "gha_zip_file_name", help="get the zip file in github actions format"
     )
 
     args = parser.parse_args()
@@ -224,7 +224,8 @@ def main():
     elif args.command == "find":
         zip_file = find_zip()
         if zip_file:
-            print(zip_file)
+            # github actions expects name=value format
+            print(f"zip_file={zip_file}")
         else:
             print("No zip file found", file=sys.stderr)
             sys.exit(1)
