@@ -1,4 +1,5 @@
 import os
+import sys
 import shutil
 import zipfile
 import subprocess
@@ -78,10 +79,7 @@ def package_project(custom_build_dir: str | None = None):
     else:
         arch_name = arch  # leave as-is for Windows/Linux
 
-    # Combine
     os_name = f"{os_name}_{arch_name}"
-
-    os_name = platform.system().lower()
 
     suffix_parts = []
     if branch != "unknown" and commit != "unknown":
@@ -186,6 +184,14 @@ def clean_project():
         print("Cleanup complete.")
 
 
+def find_zip():
+    """Return the first zip file in the current directory, or None if none exists."""
+    zip_files = list(Path(".").glob("*.zip"))
+    if zip_files:
+        return zip_files[0].name
+    return None
+
+
 def main():
     parser = argparse.ArgumentParser(
         description="Project Packager — package your build output with git metadata."
@@ -205,12 +211,23 @@ def main():
         "clean", help="Remove build directories and zip files."
     )
 
+    package_parser = subparsers.add_parser(
+        "find", help="Find the generated zip from the package command."
+    )
+
     args = parser.parse_args()
 
     if args.command == "package":
         package_project(args.dir)
     elif args.command == "clean":
         clean_project()
+    elif args.command == "find":
+        zip_file = find_zip()
+        if zip_file:
+            print(zip_file)
+        else:
+            print("No zip file found", file=sys.stderr)
+            sys.exit(1)
 
 
 if __name__ == "__main__":
