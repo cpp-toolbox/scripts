@@ -208,7 +208,7 @@ def plan_build_actions() -> list[str]:
     if need_to_run_conan_install:
         extra_options = ""
         if os_type == OSType.LINUX:
-            extra_options = "-c tools.system.package_manager:mode=install -c tools.system.package_manager:sudo=True"
+            extra_options = " -c tools.system.package_manager:mode=install -c tools.system.package_manager:sudo=True"
 
         # on a fresh linux env you usually need to install new packages, that's why the extra configuration is there.
         planned_steps.append("conan install . --build=missing" + extra_options)
