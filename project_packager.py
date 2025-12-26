@@ -211,6 +211,11 @@ def main():
         help="get the name of the packaged project name directory name",
     )
 
+    package_parser = subparsers.add_parser(
+        "gha_name",
+        help="get the name of the packaged project name directory name in github actions format",
+    )
+
     args = parser.parse_args()
 
     if args.command == "package":
@@ -227,6 +232,8 @@ def main():
             sys.exit(1)
     elif args.command == "name":
         print(str(get_build_info()))
+    elif args.command == "gha_name":
+        print(f"build_dir={str(get_build_info())}")
 
 
 if __name__ == "__main__":
