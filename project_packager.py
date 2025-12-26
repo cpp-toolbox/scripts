@@ -6,6 +6,7 @@ import subprocess
 import platform
 import argparse
 from pathlib import Path
+from dataclasses import dataclass
 
 
 def is_executable(file_path: Path) -> bool:
@@ -43,52 +44,55 @@ def get_git_info():
         return "unknown", "unknown"
 
 
-def package_project(custom_build_dir: str | None = None):
-    project_dir = Path.cwd()
-    project_name = project_dir.name
-    default_build_dir = f"{project_name}_build"
+@dataclass
+class BuildInfo:
+    project_dir: Path
+    project_name: str
+    commit: str
+    branch: str
+    os_name: str
+    cpu_arch: str
 
-    # Determine build directory
-    build_dir = Path(custom_build_dir) if custom_build_dir else Path(default_build_dir)
+    def __str__(self):
+        return f"{self.project_name}_{self.branch}_{self.commit}_{self.os_name}_{self.cpu_arch}"
 
-    # Get Git branch and commit
+
+def get_build_info() -> BuildInfo:
     branch, commit = get_git_info()
 
-    # base OS name
-    system = platform.system().lower()
-    if system == "darwin":
+    base_os_name = platform.system().lower()
+    if base_os_name == "darwin":
         os_name = "macos"
-    elif system == "windows":
-        os_name = "windows"
-    elif system == "linux":
-        os_name = "linux"
+    # elif base_os_name == "windows":
+    #     os_name = "windows"
+    # elif base_os_name == "linux":
+    #     os_name = "linux"
     else:
-        os_name = system  # fallback
+        os_name = base_os_name
 
-    # architecture
-    arch = platform.machine().lower()
+    cpu_arch = platform.machine().lower()
 
-    # normalize macOS arch to intel/silicon
+    # normalize macOS arch
     if os_name == "macos":
-        if arch == "x86_64":
+        if cpu_arch == "x86_64":
             arch_name = "intel"
-        elif arch == "arm64":
+        elif cpu_arch == "arm64":
             arch_name = "silicon"
         else:
-            arch_name = arch
+            arch_name = cpu_arch
     else:
-        arch_name = arch  # leave as-is for Windows/Linux
+        arch_name = cpu_arch
 
-    os_name = f"{os_name}_{arch_name}"
+    machine = f"{os_name}_{arch_name}"
 
-    suffix_parts = []
-    if branch != "unknown" and commit != "unknown":
-        suffix_parts.append(f"{branch}_{commit}")
-    if os_name:
-        suffix_parts.append(os_name)
+    return BuildInfo(Path.cwd(), Path.cwd().name, branch, commit, os_name, cpu_arch)
 
-    suffix = "_" + "_".join(suffix_parts) if suffix_parts else ""
-    zip_file = Path(f"{build_dir}{suffix}.zip")
+
+def package_project(custom_build_dir: str | None = None):
+    build_info = get_build_info()
+    build_dir_name = str(build_info)
+    build_dir = Path(custom_build_dir) if custom_build_dir else Path(build_dir_name)
+    zip_file = Path(f"{build_dir.name}.zip")  # zip same name as directory
 
     # Cleanup previous runs
     if build_dir.exists():
@@ -101,16 +105,15 @@ def package_project(custom_build_dir: str | None = None):
     print(f"Creating build directory: {build_dir}")
     build_dir.mkdir(parents=True, exist_ok=True)
 
-    # Copy assets folder
-    assets_src = project_dir / "assets"
+    # copy assets
+    assets_src = build_info.project_dir / "assets"
     if assets_src.exists():
-        print(f"Copying assets → {build_dir / 'assets'}")
         shutil.copytree(assets_src, build_dir / "assets")
     else:
         print("Warning: 'assets' folder not found, skipping.")
 
-    # Find executables in build/Release
-    release_dir = project_dir / "build" / "Release"
+    # copy executable
+    release_dir = build_info.project_dir / "build" / "Release"
     if not release_dir.exists():
         print(f"Error: Release directory not found: {release_dir}")
         return
@@ -120,7 +123,6 @@ def package_project(custom_build_dir: str | None = None):
         print("Error: No executable found in build/Release")
         return
 
-    # Choose executable (prompt if multiple)
     exe_file = exe_candidates[0]
     if len(exe_candidates) > 1:
         print("\nMultiple executables found:")
@@ -134,17 +136,8 @@ def package_project(custom_build_dir: str | None = None):
         )
         exe_file = exe_candidates[index]
 
-    print(f"Found executable: {exe_file.name}")
     shutil.copy2(exe_file, build_dir / exe_file.name)
 
-    # Write commit info inside build dir
-    commit_file = build_dir / "commit.txt"
-    commit_file.write_text(
-        f"Branch: {branch}\nCommit: {commit}\nOS: {os_name}\n", encoding="utf-8"
-    )
-    print(f"Embedded git info: {branch} @ {commit} on {os_name}")
-
-    # Zip it up
     print(f"Creating zip archive: {zip_file}")
     with zipfile.ZipFile(zip_file, "w", zipfile.ZIP_DEFLATED) as zipf:
         for root, _, files in os.walk(build_dir):
@@ -152,16 +145,14 @@ def package_project(custom_build_dir: str | None = None):
                 file_path = Path(root) / file
                 zipf.write(file_path, file_path.relative_to(build_dir.parent))
 
-    print(f"\nPackaging complete: {zip_file}")
-    if branch != "unknown":
-        print(f"Git baked in: {branch} @ {commit} on {os_name}")
+    print(f"Packaging complete: {zip_file}")
 
 
 def clean_project():
     """Remove generated build directories and zip files."""
     project_dir = Path.cwd()
     project_name = project_dir.name
-    build_prefix = f"{project_name}_build"
+    build_prefix = f"{project_name}_main"
 
     deleted = False
     for path in project_dir.iterdir():
@@ -215,6 +206,11 @@ def main():
         "gha_zip_file_name", help="get the zip file in github actions format"
     )
 
+    package_parser = subparsers.add_parser(
+        "name",
+        help="get the name of the packaged project name directory name",
+    )
+
     args = parser.parse_args()
 
     if args.command == "package":
@@ -229,6 +225,8 @@ def main():
         else:
             print("No zip file found", file=sys.stderr)
             sys.exit(1)
+    elif args.command == "name":
+        print(str(get_build_info()))
 
 
 if __name__ == "__main__":
